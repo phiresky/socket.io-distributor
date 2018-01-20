@@ -5,7 +5,7 @@ import { MyServerDefinition } from "./common";
 const slaveId = +process.argv[2];
 const server = http.createServer();
 server.listen(8000 + slaveId);
-const worker = new Worker<MyServerDefinition>({
+new Worker<MyServerDefinition>({
     server,
     slaveId,
     // optional: prevent CSRF

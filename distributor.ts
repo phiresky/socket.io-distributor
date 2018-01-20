@@ -10,6 +10,10 @@ import {
     NamespaceNames,
     ServerNamespace,
     ServerSideClientSocket,
+    // @ts-ignore needed for declaration export
+    GeneralClientMessages,
+    // @ts-ignore needed for declaration export
+    ServerSideClientSocketI,
 } from "typed-socket.io";
 
 export type NewConnectionMessage = {

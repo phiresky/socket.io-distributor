@@ -879,9 +879,9 @@ to-array@0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/to-array/-/to-array-0.1.4.tgz#17e6c11f73dd4f3d74cda7a4ff3238e9ad9bf890"
 
-typed-socket.io@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/typed-socket.io/-/typed-socket.io-0.2.4.tgz#64382cad9cb1a13243a5811d0bd924c3c4851b9f"
+typed-socket.io@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/typed-socket.io/-/typed-socket.io-0.2.5.tgz#b063875af7c484eb1f5ab466bbb6c138ae414a44"
 
 uid2@0.0.3:
   version "0.0.3"
