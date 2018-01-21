@@ -58,6 +58,8 @@ The `io` object will work basically the same as before.
 Then you start a few distributor processes that look like this:
 
 ```ts
+import { Worker } from "socket.io-distributor/distributor";
+
 const slaveId = +process.argv[2];
 const server = http.createServer();
 server.listen(8000 + slaveId);
