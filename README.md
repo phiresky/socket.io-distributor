@@ -1,6 +1,6 @@
 # socket.io-distributor
 
-Transparent load leveling for socket.io. Transfers events via redis like [socket.io-redis](https://github.com/socketio/socket.io-redis) but allows two-way communication.
+Transparent load leveling and multiplexing for socket.io. Transfers events via redis like [socket.io-redis](https://github.com/socketio/socket.io-redis) but allows two-way communication.
 
 Install via npm: [socket.io-distributor](https://www.npmjs.com/package/socket.io-distributor).
 
