@@ -37,6 +37,7 @@ export interface Config<
     addCustomFunctions?: (
         before: ServerNamespace<D, K>,
     ) => ServerNamespace<D, K>;
+    mapOnAsyncErrors?: (e: any) => any;
     redis: {
         uri?: string;
         opts?: SocketIORedis.SocketIORedisOptions;
@@ -57,6 +58,7 @@ export function indirectSocketViaRedis<
     namespace,
     addCustomFunctions = x => x,
     redis,
+    mapOnAsyncErrors,
 }: Config<D, K>): ServerNamespace<D, K> {
     // 0 to not actually listen on any port, connections will come through socket.io-distributor
     const globalSocketIO = (IOServer(0) as any) as RootServer<D>;
@@ -153,7 +155,7 @@ export function indirectSocketViaRedis<
             disconnect: (close = false, cb?: () => void) =>
                 adapter.remoteDisconnect(data.socketId, close, cb),
         });
-        promisifySocket(client as any);
+        promisifySocket(client as any, { mapErrors: mapOnAsyncErrors });
         client.on("disconnect", () => {
             delete sockets[client.id];
             socketEventMap.delete(client.id);
