@@ -15,6 +15,7 @@ import {
     RootServer,
     ServerSideClientSocket,
 } from "typed-socket.io";
+import { promisifySocket } from "typed-socket.io/util";
 
 export interface RedisAdapter {
     pubClient: redis.RedisClient;
@@ -145,38 +146,6 @@ export function indirectSocketViaRedis<
                 );
                 ls.push(callback);
             },
-            onAsync: function(
-                event: string,
-                callback: (...args: any[]) => Promise<any>,
-            ) {
-                this.on(event, async (...args: any[]) => {
-                    if (
-                        args.length === 0 ||
-                        typeof args[args.length - 1] !== "function"
-                    ) {
-                        console.log(
-                            `invalid callback: user ${JSON.stringify(
-                                data.additionalSocketInfo,
-                            )} called`,
-                            event,
-                            "with args",
-                            args,
-                        );
-                    } else {
-                        const clientCallback = args[args.length - 1];
-                        try {
-                            clientCallback(
-                                null,
-                                await callback(
-                                    ...args.slice(0, args.length - 1),
-                                ),
-                            );
-                        } catch (e) {
-                            clientCallback(e);
-                        }
-                    }
-                });
-            },
             join: (room: string, cb: () => void) =>
                 adapter.remoteJoin(data.socketId, room, cb),
             leave: (room: string, cb: () => void) =>
@@ -184,6 +153,7 @@ export function indirectSocketViaRedis<
             disconnect: (close = false, cb?: () => void) =>
                 adapter.remoteDisconnect(data.socketId, close, cb),
         });
+        promisifySocket(client as any);
         client.on("disconnect", () => {
             delete sockets[client.id];
             socketEventMap.delete(client.id);
