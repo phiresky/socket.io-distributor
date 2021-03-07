@@ -1,5 +1,4 @@
 import * as SocketIO from "socket.io";
-import * as _redisAdapter from "socket.io-redis";
 import * as redis from "redis";
 import { socketIoWildcard, DEFAULT_PREFIX } from "./util";
 import * as net from "net";
@@ -15,6 +14,7 @@ import {
     // @ts-ignore needed for declaration export
     ServerSideClientSocketI,
 } from "typed-socket.io";
+import * as SocketIORedis from "socket.io-redis";
 
 export type NewConnectionMessage = {
     type: "newConnection";
@@ -63,12 +63,10 @@ export interface Config<S extends ServerDefinition> {
         // prefix all events with this string
         prefix?: string;
     };
-    customEventHandler?: (
-        event: {
-            type: "custom";
-            [name: string]: mixed;
-        },
-    ) => void;
+    customEventHandler?: (event: {
+        type: "custom";
+        [name: string]: mixed;
+    }) => void;
     /** called on connect. return any additional properties you want passed to the workers like a session id etc. */
     onClientConnect?: (client: NamespaceNames<S>) => object;
 }
@@ -100,7 +98,7 @@ export class Worker<S extends ServerDefinition> {
             ? redis.createClient(config.redis.uri, config.redis.opts)
             : redis.createClient(config.redis.opts);
         const subClient = pubClient.duplicate();
-        this.redisAdapter = _redisAdapter({ pubClient, subClient });
+        this.redisAdapter = SocketIORedis({ pubClient, subClient });
 
         this.io = SocketIO(this.server) as any;
         this.io.adapter(this.redisAdapter);
@@ -165,7 +163,7 @@ export class Worker<S extends ServerDefinition> {
     }
     private sendStats() {
         const stats = this.namespaceList
-            .map(ns => `${ns.namespace}: ${ns.connectionCount}`)
+            .map((ns) => `${ns.namespace}: ${ns.connectionCount}`)
             .join("\t");
         console.log(`distributor${this.slaveId}:`, stats);
     }
@@ -227,7 +225,7 @@ export class NamespaceWorker<
     constructor(private worker: Worker<S>, public namespace: NS) {
         this.nsio = worker.io.of(this.namespace) as any;
         this.nsio.use(socketIoWildcard());
-        this.nsio.on("connection", client => {
+        this.nsio.on("connection", (client) => {
             if (this.cached[client.id]) {
                 // race condition in socket.io code, when client does
                 // for(var i = 0; i < 5; i++){ws.disconnect();ws.connect()}
