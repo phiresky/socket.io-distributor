@@ -90,7 +90,10 @@ export class Worker<S extends ServerDefinition> {
     >();
     private redisPrefix: string;
 
-    public constructor(public readonly config: Config<S>) {
+    public constructor(
+        public readonly config: Config<S>,
+        serverOptions?: SocketIO.ServerOptions,
+    ) {
         this.redisPrefix = config.redis.prefix || DEFAULT_PREFIX;
         this.server = config.server;
         this.slaveId = config.slaveId;
@@ -100,7 +103,7 @@ export class Worker<S extends ServerDefinition> {
         const subClient = pubClient.duplicate();
         this.redisAdapter = SocketIORedis({ pubClient, subClient });
 
-        this.io = SocketIO(this.server) as any;
+        this.io = SocketIO(this.server, serverOptions) as any;
         this.io.adapter(this.redisAdapter);
         if (config.validOrigins) {
             const origins = config.validOrigins;
