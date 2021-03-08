@@ -1,6 +1,6 @@
 {
     "name": "socket.io-distributor",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "description": "Transparent load leveling for socket.io",
     "main": "index.js",
     "typings": "index.d.ts",
