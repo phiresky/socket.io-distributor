@@ -1076,6 +1076,11 @@ typed-socket.io@^0.3.2:
   resolved "https://registry.yarnpkg.com/typed-socket.io/-/typed-socket.io-0.3.3.tgz#b2336a78e9dd0abf0f4a8e6c93802b36470ecf02"
   integrity sha1-sjNqeOndCr8PSo5sk4ArNkcOzwI=
 
+typescript@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.3.tgz#39062d8019912d43726298f09493d598048c1ce3"
+  integrity sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==
+
 uid2@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/uid2/-/uid2-0.0.3.tgz#483126e11774df2f71b8b639dcd799c376162b82"

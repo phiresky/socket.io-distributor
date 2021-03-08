@@ -228,7 +228,7 @@ export class NamespaceWorker<
     constructor(private worker: Worker<S>, public namespace: NS) {
         this.nsio = worker.io.of(this.namespace) as any;
         this.nsio.use(socketIoWildcard());
-        this.nsio.on("connection", (client) => {
+        this.nsio.on("connection", (client: any) => {
             if (this.cached[client.id]) {
                 // race condition in socket.io code, when client does
                 // for(var i = 0; i < 5; i++){ws.disconnect();ws.connect()}
@@ -256,7 +256,7 @@ export class NamespaceWorker<
             // disconnect all clients on fail because the backend might have crashed without us noticing
             this.disconnectAllClients,
         );
-        client.on("*", ({ data: [event, ...data] }) => {
+        client.on("*", ({ data: [event, ...data] }: { data: any }) => {
             if (typeof event !== "string") {
                 console.warn("why is event", typeof event);
                 return;
@@ -275,7 +275,7 @@ export class NamespaceWorker<
                     >();
                     client.siodNextCallbackId = 1;
                 }
-                callbackId = client.siodNextCallbackId!;
+                callbackId = client.siodNextCallbackId! as number;
                 client.siodNextCallbackId = callbackId + 1;
                 client.siodCallbacks.set(callbackId, callback);
             }
@@ -319,7 +319,7 @@ export class NamespaceWorker<
             cb(...data.data);
         }
     }
-    getAllClients() {
+    getAllClients(): any[] {
         return Array.from(Object.values(this.nsio.sockets));
     }
     disconnectAllClients = () => {
