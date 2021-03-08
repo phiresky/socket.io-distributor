@@ -16,6 +16,7 @@ import {
     ServerSideClientSocket,
 } from "typed-socket.io";
 import { promisifySocket } from "typed-socket.io/util";
+import * as SocketIORedis from "socket.io-redis";
 
 export interface RedisAdapter {
     pubClient: redis.RedisClient;
@@ -56,7 +57,7 @@ export function indirectSocketViaRedis<
     K extends NamespaceNames<D>
 >({
     namespace,
-    addCustomFunctions = x => x,
+    addCustomFunctions = (x) => x,
     redis,
     mapOnAsyncErrors,
 }: Config<D, K>): ServerNamespace<D, K> {
@@ -140,7 +141,7 @@ export function indirectSocketViaRedis<
             id: data.socketId,
             emit: (event: string, ...args: any[]) =>
                 (rawNSSocket.in(data.socketId) as any).emit(event, ...args),
-            on: function(event: string, callback: () => void) {
+            on: function (event: string, callback: () => void) {
                 const ls = setDefault(
                     setDefault(socketEventMap, data.socketId, () => new Map()),
                     event,
@@ -162,7 +163,7 @@ export function indirectSocketViaRedis<
         });
         const mws: MW[] = [
             ...middlewares,
-            client => connectionListeners.forEach(cb => cb(client)),
+            (client) => connectionListeners.forEach((cb) => cb(client)),
         ];
         nextMiddleware(mws, client, 0);
         sockets[client.id] = client;
