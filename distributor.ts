@@ -243,9 +243,29 @@ export class NamespaceWorker<
     ) {
         this.connectionCount++;
         this.cached[client.id] = client;
+        let sentHasConnected = false;
+        let disconnected = false;
+        client.on("disconnect", () => {
+            disconnected = true;
+            if (sentHasConnected) {
+                this.worker.toBackend(
+                    {
+                        type: "clientMessage",
+                        event: "disconnect",
+                        socketId: client.id,
+                        data: [],
+                        slaveId: this.worker.slaveId,
+                    },
+                    this.namespace,
+                );
+            }
+            this.connectionCount--;
+            delete this.cached[client.id];
+        });
         const additionalSocketInfo = this.worker.config.onClientConnect
             ? this.worker.config.onClientConnect(client)
             : {};
+        if (disconnected) return;
         this.worker.toBackend(
             {
                 type: "newConnection",
@@ -256,6 +276,7 @@ export class NamespaceWorker<
             // disconnect all clients on fail because the backend might have crashed without us noticing
             this.disconnectAllClients,
         );
+        sentHasConnected = true;
         client.on("*", ({ data: [event, ...data] }: { data: any }) => {
             if (typeof event !== "string") {
                 console.warn("why is event", typeof event);
@@ -290,20 +311,6 @@ export class NamespaceWorker<
                 },
                 this.namespace,
             );
-        });
-        client.on("disconnect", () => {
-            this.worker.toBackend(
-                {
-                    type: "clientMessage",
-                    event: "disconnect",
-                    socketId: client.id,
-                    data: [],
-                    slaveId: this.worker.slaveId,
-                },
-                this.namespace,
-            );
-            this.connectionCount--;
-            delete this.cached[client.id];
         });
     }
     handleCallback(data: CallbackMessage) {
